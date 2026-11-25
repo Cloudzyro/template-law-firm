@@ -1,0 +1,422 @@
+---
+import Base from "../layouts/Base.astro";
+import { site, home, practiceAreas, attorneys, results, offices, areaName } from "../data/site";
+
+const featuredResults = results.items.slice(0, 3);
+const partners = attorneys.slice(0, 4);
+---
+
+<Base>
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div class="hero-text">
+        <p class="kicker">{home.kicker}</p>
+        <h1>{home.heroTitle}</h1>
+        <p class="lede">{home.heroText}</p>
+        <div class="actions">
+          <a class="btn btn-primary" href="/consultation">{home.primaryCta}</a>
+          <a class="btn btn-quiet" href="/attorneys">{home.secondaryCta}</a>
+        </div>
+        <dl class="facts">
+          {
+            home.facts.map((f) => (
+              <div>
+                <dt>{f.label}</dt>
+                <dd>{f.figure}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+      <nav class="index" aria-labelledby="index-title">
+        <h2 id="index-title">Practice index</h2>
+        <ol>
+          {
+            practiceAreas.map((a, i) => (
+              <li>
+                <a href={`/practice-areas/${a.slug}`}>
+                  <span class="sect">§ {i + 1}</span>
+                  <span class="index-name">{a.name}</span>
+                  <span class="leader" aria-hidden="true" />
+                  <span class="index-meta">
+                    {(() => { const n = attorneys.filter((p) => p.areas.includes(a.slug)).length; return `${n} ${n === 1 ? "attorney" : "attorneys"}`; })()}
+                  </span>
+                </a>
+                <p>{a.summary}</p>
+              </li>
+            ))
+          }
+        </ol>
+      </nav>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap approach">
+      <h2>{home.approachTitle}</h2>
+      <ol>
+        {
+          home.approach.map((s, i) => (
+            <li>
+              <span class="num">{i + 1}</span>
+              <div>
+                <h3>{s.title}</h3>
+                <p>{s.text}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="head-row">
+        <h2>The attorneys</h2>
+        <a href="/attorneys">All {attorneys.length} attorneys</a>
+      </div>
+      <ul class="people">
+        {
+          partners.map((p) => (
+            <li>
+              <a href={`/attorneys/${p.slug}`}>
+                <span class="mono" aria-hidden="true">
+                  {p.initials}
+                </span>
+                <span class="person-name">{p.name}</span>
+                <span class="person-role">{p.role}</span>
+                <span class="person-areas">{p.areas.map(areaName).join(", ")}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="section results-band">
+    <div class="wrap">
+      <div class="head-row">
+        <h2>Recent results</h2>
+        <a href="/results">More sample results</a>
+      </div>
+      <ul class="results">
+        {
+          featuredResults.map((r) => (
+            <li>
+              <p class="figure">{r.figure}</p>
+              <p class="kind">
+                {r.kind}, {r.year}
+              </p>
+              <p>{r.text}</p>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="fine">{results.disclaimer}</p>
+    </div>
+  </section>
+
+  <section class="cta">
+    <div class="wrap cta-grid">
+      <div>
+        <h2>Talk to a lawyer this week</h2>
+        <p>
+          Call {site.phone} or send a short request. An attorney reviews every inquiry and replies within one business
+          day.
+        </p>
+      </div>
+      <div class="cta-side">
+        <a class="btn btn-light" href="/consultation">Request a consultation</a>
+        <p>
+          {offices.map((o, i) => <>{i > 0 && " and "}{o.street.split(",")[0]}, {o.city}</>)}
+        </p>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero {
+    padding-block: clamp(56px, 8vw, 104px);
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    gap: clamp(40px, 6vw, 96px);
+    align-items: start;
+  }
+  .hero h1 {
+    max-width: 15ch;
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 32px;
+  }
+  .facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    margin: 48px 0 0;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+  }
+  .facts div {
+    display: flex;
+    flex-direction: column-reverse;
+  }
+  .facts dt {
+    font-size: 0.875rem;
+    color: var(--muted);
+  }
+  .facts dd {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 2rem;
+    line-height: 1.2;
+    font-variant-numeric: tabular-nums;
+  }
+  .index {
+    border-top: 2px solid var(--ink);
+    padding-top: 16px;
+  }
+  .index h2 {
+    font-family: var(--font-body);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+  .index ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .index li {
+    border-bottom: 1px solid var(--line);
+    padding-block: 16px;
+  }
+  .index a {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    text-decoration: none;
+  }
+  .index .sect {
+    min-width: 2.4em;
+    font-size: 1.0625rem;
+  }
+  .index-name {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    line-height: 1.3;
+  }
+  .leader {
+    flex: 1;
+    border-bottom: 1px dotted var(--line-strong);
+    transform: translateY(-4px);
+    min-width: 16px;
+  }
+  .index-meta {
+    font-size: 0.8125rem;
+    color: var(--muted);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+  .index p {
+    margin: 4px 0 0 calc(2.4em + 12px);
+    font-size: 0.9375rem;
+    color: var(--ink-2);
+    line-height: 1.5;
+  }
+  .index a:hover .index-name {
+    color: var(--accent);
+  }
+
+  .approach {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    gap: 48px;
+  }
+  .approach ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 32px;
+  }
+  .approach li {
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    gap: 16px;
+  }
+  .num {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    color: var(--muted);
+    line-height: 1.2;
+  }
+  .approach p {
+    color: var(--ink-2);
+    margin: 0;
+    max-width: 56ch;
+  }
+
+  .head-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 32px;
+  }
+  .head-row h2 {
+    margin: 0;
+  }
+  .people {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 24px;
+  }
+  .people a {
+    display: grid;
+    gap: 4px;
+    text-decoration: none;
+  }
+  .mono {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 4 / 5;
+    background: var(--paper-sunk);
+    border: 1px solid var(--line);
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    color: var(--ink-2);
+    margin-bottom: 12px;
+    border-radius: var(--radius);
+    transition: background-color 150ms var(--ease);
+  }
+  .people a:hover .mono {
+    background: #e4e2da;
+  }
+  .person-name {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+  }
+  .person-role {
+    font-size: 0.9375rem;
+    color: var(--ink-2);
+  }
+  .person-areas {
+    font-size: 0.8125rem;
+    color: var(--muted);
+  }
+
+  .results-band {
+    background: var(--paper-raised);
+  }
+  .results {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-top: 1px solid var(--ink);
+  }
+  .results li {
+    padding: 24px 24px 8px 0;
+  }
+  .results li + li {
+    padding-left: 24px;
+    border-left: 1px solid var(--line);
+  }
+  .figure {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    line-height: 1.1;
+    margin-bottom: 8px;
+    font-variant-numeric: tabular-nums;
+  }
+  .kind {
+    font-size: 0.875rem;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .results li p:last-child {
+    color: var(--ink-2);
+  }
+  .fine {
+    margin-top: 32px;
+    font-size: 0.8125rem;
+    color: var(--muted);
+    max-width: 72ch;
+  }
+
+  .cta {
+    background: var(--navy-2);
+    color: var(--on-navy);
+    padding-block: clamp(56px, 8vw, 88px);
+  }
+  .cta-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: 40px;
+    align-items: end;
+  }
+  .cta p {
+    color: var(--on-navy-2);
+    max-width: 48ch;
+    margin: 0;
+  }
+  .cta-side {
+    display: grid;
+    gap: 16px;
+    justify-items: start;
+  }
+  .cta-side p {
+    font-size: 0.875rem;
+  }
+  .btn-light {
+    background: var(--on-navy);
+    color: var(--navy);
+  }
+  .btn-light:hover {
+    background: #fff;
+    color: var(--navy);
+  }
+
+  @media (max-width: 960px) {
+    .hero-grid,
+    .approach,
+    .cta-grid {
+      grid-template-columns: 1fr;
+    }
+    .people {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .results {
+      grid-template-columns: 1fr;
+    }
+    .results li,
+    .results li + li {
+      padding: 24px 0 8px;
+      border-left: 0;
+    }
+    .results li + li {
+      border-top: 1px solid var(--line);
+    }
+  }
+  @media (max-width: 480px) {
+    .index-meta {
+      display: none;
+    }
+    .facts {
+      gap: 24px;
+    }
+  }
+</style>

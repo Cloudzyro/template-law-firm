@@ -1,0 +1,76 @@
+---
+// Posts to PUBLIC_FORM_ENDPOINT (Formspree, Basin, a Supabase function or similar).
+// With no endpoint set, the form shows a note and opens the visitor's email app instead.
+import { site } from "../data/site";
+
+interface Props {
+  subject: string;
+  button: string;
+  success: string;
+  class?: string;
+}
+const { subject, button, success, class: className } = Astro.props;
+const endpoint = import.meta.env.PUBLIC_FORM_ENDPOINT ?? "";
+---
+
+<form
+  class:list={["cz-form", className]}
+  method="post"
+  action={endpoint || `mailto:${site.email}`}
+  data-endpoint={endpoint}
+  data-email={site.email}
+  data-subject={subject}
+  data-success={success}
+>
+  {
+    !endpoint && (
+      <p class="form-note" role="note">
+        This form isn't connected yet, so sending it opens your email app with your answers filled in. You can also
+        write to <a href={`mailto:${site.email}?subject=${encodeURIComponent(subject)}`}>{site.email}</a>.
+      </p>
+    )
+  }
+  <input type="hidden" name="_subject" value={subject} />
+  <slot />
+  <div class="form-actions">
+    <button class="btn btn-primary" type="submit">{button}</button>
+    <p class="form-status" role="status" aria-live="polite"></p>
+  </div>
+</form>
+
+<script>
+  document.querySelectorAll<HTMLFormElement>("form.cz-form").forEach((form) => {
+    const status = form.querySelector<HTMLElement>(".form-status")!;
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const { endpoint, email, subject, success } = form.dataset;
+      const data = new FormData(form);
+
+      if (!endpoint) {
+        const lines = [...data.entries()]
+          .filter(([key, value]) => !key.startsWith("_") && String(value).trim() !== "")
+          .map(([key, value]) => `${key.replace(/_/g, " ")}: ${value}`);
+        window.location.href = `mailto:${email}?subject=${encodeURIComponent(subject ?? "")}&body=${encodeURIComponent(lines.join("\n"))}`;
+        status.textContent = "Your email app should open with your answers filled in.";
+        return;
+      }
+
+      const button = form.querySelector<HTMLButtonElement>("button[type=submit]")!;
+      button.disabled = true;
+      status.textContent = "Sending...";
+      try {
+        const res = await fetch(endpoint, { method: "POST", body: data, headers: { Accept: "application/json" } });
+        if (!res.ok) throw new Error(String(res.status));
+        form.reset();
+        status.textContent = success ?? "Thank you, it's sent.";
+      } catch {
+        status.textContent = "";
+        status.append("Sorry, that didn't send. Please email ");
+        const link = Object.assign(document.createElement("a"), { href: `mailto:${email}`, textContent: email });
+        status.append(link, " instead.");
+      } finally {
+        button.disabled = false;
+      }
+    });
+  });
+</script>

@@ -1,0 +1,121 @@
+---
+import { site, offices, practiceAreas } from "../data/site";
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="wrap grid">
+    <div class="about">
+      <p class="name">{site.legalName}</p>
+      <p>{site.tagline}. Founded {site.founded}.</p>
+      <p>
+        <a href={`tel:${site.phone.replace(/[^\d+]/g, "")}`}>{site.phone}</a><br />
+        <a href={`mailto:${site.email}`}>{site.email}</a>
+      </p>
+    </div>
+    <div>
+      <h2>Practice areas</h2>
+      <ul>
+        {
+          practiceAreas.map((a, i) => (
+            <li>
+              <a href={`/practice-areas/${a.slug}`}>
+                <span class="sect">§ {i + 1}</span> {a.name}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+    <div>
+      <h2>Offices</h2>
+      {
+        offices.map((o) => (
+          <p>
+            {o.name}
+            <br />
+            {o.street}
+            <br />
+            {o.city}, {o.region} {o.postal}
+          </p>
+        ))
+      }
+    </div>
+  </div>
+  <div class="wrap legal">
+    <p>{site.disclaimer}</p>
+    <p class="small">
+      &copy; {year}
+      {site.legalName}. <a href="/results">About our sample results</a>
+      {site.social.map((s) => <> · <a href={s.url}>{s.label}</a></>)}
+    </p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: 0;
+    background: var(--navy);
+    color: var(--on-navy-2);
+    font-size: 0.9375rem;
+    padding-block: 64px 40px;
+  }
+  .site-footer a {
+    color: var(--on-navy);
+    text-decoration-color: rgba(238, 240, 245, 0.3);
+  }
+  .site-footer a:hover {
+    color: #fff;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr 1fr;
+    gap: 40px;
+  }
+  .name {
+    font-family: var(--font-display);
+    font-size: 1.375rem;
+    color: var(--on-navy);
+  }
+  h2 {
+    font-family: var(--font-body);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--on-navy);
+    margin-bottom: 16px;
+  }
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+  }
+  ul a {
+    text-decoration: none;
+  }
+  .sect {
+    color: #c9a2a8;
+    display: inline-block;
+    min-width: 2.2em;
+  }
+  .legal {
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(238, 240, 245, 0.12);
+    font-size: 0.8125rem;
+    max-width: var(--wrap);
+  }
+  .legal p:first-child {
+    max-width: 72ch;
+  }
+  .small {
+    margin: 0;
+  }
+  @media (max-width: 760px) {
+    .grid {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+  }
+</style>

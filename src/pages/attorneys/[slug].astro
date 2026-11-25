@@ -1,0 +1,181 @@
+---
+import Base from "../../layouts/Base.astro";
+import { attorneys, areaName, sectionNumber, type Attorney } from "../../data/site";
+
+export function getStaticPaths() {
+  return attorneys.map((p) => ({ params: { slug: p.slug }, props: { person: p } }));
+}
+
+const { person: p } = Astro.props as { person: Attorney };
+const tel = p.phone.replace(/[^\d+]/g, "");
+---
+
+<Base title={p.name} description={`${p.name}, ${p.role.toLowerCase()} at Whitcombe & Vale LLP. ${p.summary}`}>
+  <div class="wrap profile">
+    <aside class="card">
+      <div class="portrait" role="img" aria-label={`Portrait placeholder for ${p.name}`}>
+        <span>{p.initials}</span>
+      </div>
+      <dl class="contact">
+        <div>
+          <dt>Direct line</dt>
+          <dd><a href={`tel:${tel}`}>{p.phone}</a></dd>
+        </div>
+        <div>
+          <dt>Email</dt>
+          <dd><a href={`mailto:${p.email}`}>{p.email}</a></dd>
+        </div>
+      </dl>
+      <a class="btn btn-primary" href="/consultation">Request a consultation</a>
+    </aside>
+
+    <article>
+      <p class="kicker"><a href="/attorneys">Attorneys</a></p>
+      <h1>{p.name}</h1>
+      <p class="role">{p.role}</p>
+      <p class="summary">{p.summary}</p>
+
+      <div class="bio">{p.bio.map((para) => <p>{para}</p>)}</div>
+
+      <div class="facts">
+        <section>
+          <h2>Practice areas</h2>
+          <ul>
+            {
+              p.areas.map((a) => (
+                <li>
+                  <a href={`/practice-areas/${a}`}>
+                    <span class="sect">§ {sectionNumber(a)}</span> {areaName(a)}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </section>
+        <section>
+          <h2>Education</h2>
+          <ul>{p.education.map((e) => <li>{e}</li>)}</ul>
+        </section>
+        <section>
+          <h2>Bar admissions</h2>
+          <ul>{p.admissions.map((e) => <li>{e}</li>)}</ul>
+        </section>
+        <section>
+          <h2>Memberships</h2>
+          <ul>{p.memberships.map((e) => <li>{e}</li>)}</ul>
+        </section>
+      </div>
+    </article>
+  </div>
+</Base>
+
+<style>
+  .profile {
+    display: grid;
+    grid-template-columns: minmax(0, 340px) minmax(0, 1fr);
+    gap: clamp(40px, 6vw, 96px);
+    padding-block: clamp(48px, 7vw, 88px);
+    align-items: start;
+  }
+  .card {
+    position: sticky;
+    top: 24px;
+    display: grid;
+    gap: 24px;
+  }
+  .portrait {
+    aspect-ratio: 4 / 5;
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+    background: var(--paper-sunk);
+    display: grid;
+    place-items: center;
+  }
+  .portrait span {
+    font-family: var(--font-display);
+    font-size: 4.5rem;
+    color: var(--ink-2);
+  }
+  .contact {
+    margin: 0;
+    display: grid;
+    gap: 12px;
+    font-size: 0.9375rem;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+  }
+  .contact dt {
+    font-size: 0.8125rem;
+    color: var(--muted);
+  }
+  .contact dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+  .kicker a {
+    color: var(--muted);
+  }
+  h1 {
+    margin-bottom: 8px;
+  }
+  .role {
+    font-size: 1.125rem;
+    color: var(--ink-2);
+  }
+  .summary {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    line-height: 1.4;
+    max-width: 36ch;
+    margin-top: 32px;
+    padding-left: 20px;
+    border-left: 2px solid var(--accent);
+  }
+  .bio {
+    margin-top: 32px;
+    max-width: 64ch;
+    color: var(--ink-2);
+    font-size: 1.0625rem;
+  }
+  .facts {
+    margin-top: 48px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 32px 40px;
+    border-top: 2px solid var(--ink);
+    padding-top: 32px;
+  }
+  .facts h2 {
+    font-family: var(--font-body);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    margin-bottom: 12px;
+  }
+  .facts ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+    color: var(--ink-2);
+    font-size: 0.9375rem;
+  }
+  .facts a {
+    text-decoration: none;
+  }
+  @media (max-width: 860px) {
+    .profile {
+      grid-template-columns: 1fr;
+    }
+    .card {
+      position: static;
+      order: 2;
+    }
+    .portrait {
+      max-width: 240px;
+    }
+    .facts {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,126 @@
+---
+import Base from "../layouts/Base.astro";
+import { offices } from "../data/site";
+---
+
+<Base title="Offices" description="Whitcombe & Vale's offices in Hartwell and Cuyahoga Falls, with hours, parking and access.">
+  <header class="page-head">
+    <div class="wrap">
+      <p class="kicker">Offices</p>
+      <h1>Two offices in Summit County</h1>
+      <p class="lede">
+        Meet us in person at either office, or by phone or video if that's easier. Evening appointments are available on
+        request.
+      </p>
+    </div>
+  </header>
+  <section class="section">
+    <div class="wrap offices">
+      {
+        offices.map((o) => (
+          <article>
+            <svg class="plan" viewBox="0 0 400 180" role="img" aria-label={`Street sketch of the ${o.name} office`}>
+              <rect width="400" height="180" fill="#ecebe5" />
+              <path d="M0 120h400M0 136h400" stroke="#14213d" stroke-opacity=".18" />
+              <path d="M150 0v180M166 0v180" stroke="#14213d" stroke-opacity=".18" />
+              <path d="M0 60h150M166 60h234" stroke="#14213d" stroke-opacity=".08" />
+              <rect x="190" y="72" width="64" height="40" fill="#f6f5f1" stroke="#14213d" stroke-opacity=".5" />
+              <rect x="214" y="96" width="16" height="16" fill="#7a2430" />
+              <text x="190" y="64" font-family="Libre Franklin Variable, sans-serif" font-size="11" fill="#3f4a60">
+                {o.street.split(",")[0]}
+              </text>
+            </svg>
+            <p class="label">{o.label}</p>
+            <h2>{o.name}</h2>
+            <address>
+              {o.street}
+              <br />
+              {o.city}, {o.region} {o.postal}
+            </address>
+            <p>
+              <a href={`tel:${o.phone.replace(/[^\d+]/g, "")}`}>{o.phone}</a>
+            </p>
+            <h3>Hours</h3>
+            <dl class="hours">
+              {o.hours.map((h) => (
+                <div>
+                  <dt>{h.days}</dt>
+                  <dd>{h.time}</dd>
+                </div>
+              ))}
+            </dl>
+            <h3>Parking</h3>
+            <p>{o.parking}</p>
+            <h3>Access</h3>
+            <p>{o.access}</p>
+            <a class="btn btn-quiet" href={o.mapsUrl}>
+              Open in maps
+            </a>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+</Base>
+
+<style>
+  .offices {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(40px, 6vw, 80px);
+  }
+  .plan {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius);
+    margin-bottom: 24px;
+  }
+  .label {
+    font-size: 0.875rem;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  h2 {
+    font-size: 2rem;
+  }
+  address {
+    font-style: normal;
+    color: var(--ink-2);
+    margin-bottom: 8px;
+  }
+  h3 {
+    font-family: var(--font-body);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    margin: 24px 0 8px;
+  }
+  article p {
+    color: var(--ink-2);
+  }
+  .hours {
+    margin: 0;
+    display: grid;
+    gap: 4px;
+  }
+  .hours div {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    border-bottom: 1px dotted var(--line-strong);
+    padding-bottom: 4px;
+    color: var(--ink-2);
+  }
+  .hours dd {
+    margin: 0;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .btn {
+    margin-top: 16px;
+  }
+  @media (max-width: 800px) {
+    .offices {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,181 @@
+---
+import { site } from "../data/site";
+
+const links = [
+  { href: "/practice-areas", label: "Practice areas" },
+  { href: "/attorneys", label: "Attorneys" },
+  { href: "/results", label: "Results" },
+  { href: "/offices", label: "Offices" },
+];
+const path = Astro.url.pathname.replace(/\/$/, "");
+const isCurrent = (href: string) => path === href || path.startsWith(href + "/");
+---
+
+<header class="site-header">
+  <div class="wrap bar">
+    <a class="brand" href="/" aria-label={`${site.legalName}, home`}>
+      <span class="brand-name">{site.name}</span>
+      <span class="brand-llp">LLP</span>
+    </a>
+    <nav aria-label="Main">
+      <ul class="links">
+        {
+          links.map((l) => (
+            <li>
+              <a href={l.href} aria-current={isCurrent(l.href) ? "page" : undefined}>
+                {l.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+    <div class="end">
+      <a class="phone" href={`tel:${site.phone.replace(/[^\d+]/g, "")}`}>{site.phone}</a>
+      <a class="btn btn-primary btn-sm" href="/consultation">Consultation</a>
+      <details class="menu">
+        <summary aria-label="Menu">
+          <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"
+            ><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.5" fill="none"></path></svg
+          >
+          <span>Menu</span>
+        </summary>
+        <ul>
+          {links.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+          <li><a href="/consultation">Request a consultation</a></li>
+          <li><a href={`tel:${site.phone.replace(/[^\d+]/g, "")}`}>Call {site.phone}</a></li>
+        </ul>
+      </details>
+    </div>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    border-bottom: 1px solid var(--line);
+    background: var(--paper);
+  }
+  .bar {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    min-height: 72px;
+  }
+  .brand {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 8px;
+    text-decoration: none;
+    color: var(--ink);
+  }
+  .brand-name {
+    font-family: var(--font-display);
+    font-size: 1.375rem;
+    font-weight: 500;
+    line-height: 1;
+  }
+  .brand-llp {
+    font-size: 0.75rem;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+  nav {
+    margin-left: auto;
+  }
+  .links {
+    display: flex;
+    gap: 28px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .links a {
+    font-size: 0.9375rem;
+    text-decoration: none;
+    color: var(--ink-2);
+    padding-block: 8px;
+    border-bottom: 1px solid transparent;
+  }
+  .links a:hover {
+    color: var(--ink);
+  }
+  .links a[aria-current="page"] {
+    color: var(--ink);
+    border-bottom-color: var(--accent);
+  }
+  .end {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .phone {
+    font-size: 0.9375rem;
+    text-decoration: none;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink-2);
+  }
+  .btn-sm {
+    min-height: 40px;
+    padding: 0 16px;
+  }
+  .menu {
+    display: none;
+    position: relative;
+  }
+  .menu summary {
+    list-style: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 40px;
+    padding: 0 12px;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-size: 0.9375rem;
+  }
+  .menu summary::-webkit-details-marker {
+    display: none;
+  }
+  .menu ul {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 8px);
+    min-width: 240px;
+    list-style: none;
+    margin: 0;
+    padding: 8px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    box-shadow: 0 8px 24px rgba(20, 33, 61, 0.08);
+    z-index: 20;
+  }
+  .menu li a {
+    display: block;
+    padding: 10px 12px;
+    text-decoration: none;
+    border-radius: var(--radius);
+  }
+  .menu li a:hover {
+    background: var(--paper-sunk);
+  }
+  @media (max-width: 1020px) {
+    nav,
+    .phone {
+      display: none;
+    }
+    .end {
+      margin-left: auto;
+      gap: 12px;
+    }
+    .menu {
+      display: block;
+    }
+  }
+  @media (max-width: 420px) {
+    .btn-sm {
+      display: none;
+    }
+  }
+</style>

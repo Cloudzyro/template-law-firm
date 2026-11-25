@@ -1,0 +1,222 @@
+---
+import Base from "../../layouts/Base.astro";
+import { practiceAreas, attorneys, results, sectionNumber, type PracticeArea } from "../../data/site";
+
+export function getStaticPaths() {
+  return practiceAreas.map((area) => ({ params: { slug: area.slug }, props: { area } }));
+}
+
+const { area } = Astro.props as { area: PracticeArea };
+const n = sectionNumber(area.slug);
+const people = attorneys.filter((p) => p.areas.includes(area.slug));
+const related = results.items.filter((r) => r.area === area.slug);
+---
+
+<Base title={area.name} description={area.summary}>
+  <header class="page-head">
+    <div class="wrap">
+      <p class="kicker"><a href="/practice-areas">Practice areas</a> <span class="sect">§ {n}</span></p>
+      <h1>{area.name}</h1>
+      <p class="lede">{area.summary}</p>
+    </div>
+  </header>
+
+  <div class="wrap layout section">
+    <article>
+      <p class="intro">{area.intro}</p>
+
+      <h2>Matters we handle</h2>
+      <ul class="list">{area.matters.map((m) => <li>{m}</li>)}</ul>
+
+      <h2>Common questions</h2>
+      <dl class="qa">
+        {
+          area.questions.map((q) => (
+            <div>
+              <dt>{q.q}</dt>
+              <dd>{q.a}</dd>
+            </div>
+          ))
+        }
+      </dl>
+
+      {
+        related.length > 0 && (
+          <>
+            <h2>Sample results</h2>
+            <ul class="results">
+              {related.map((r) => (
+                <li>
+                  <span class="fig">{r.figure}</span>
+                  <span>
+                    {r.kind}, {r.year}. {r.text}
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <p class="fine">{results.disclaimer}</p>
+          </>
+        )
+      }
+    </article>
+
+    <aside>
+      <h2 class="aside-title">Attorneys in this area</h2>
+      <ul class="people">
+        {
+          people.map((p) => (
+            <li>
+              <a href={`/attorneys/${p.slug}`}>
+                <span class="mono" aria-hidden="true">{p.initials}</span>
+                <span>
+                  <span class="pname">{p.name}</span>
+                  <span class="prole">{p.role}</span>
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <div class="box">
+        <p>Have a question about {area.name.toLowerCase()}? An attorney reviews every request within one business day.</p>
+        <a class="btn btn-primary" href={`/consultation?area=${area.slug}`}>Request a consultation</a>
+      </div>
+    </aside>
+  </div>
+</Base>
+
+<style>
+  .kicker a {
+    color: var(--muted);
+  }
+  .kicker .sect {
+    margin-left: 8px;
+  }
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+    gap: clamp(40px, 6vw, 96px);
+    align-items: start;
+  }
+  .intro {
+    font-size: 1.1875rem;
+    color: var(--ink-2);
+    max-width: 60ch;
+  }
+  article h2 {
+    font-size: 1.625rem;
+    margin-top: 48px;
+  }
+  .list {
+    padding-left: 20px;
+    color: var(--ink-2);
+    display: grid;
+    gap: 8px;
+  }
+  .qa {
+    margin: 0;
+    display: grid;
+    gap: 24px;
+  }
+  .qa dt {
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+  .qa dd {
+    margin: 0;
+    color: var(--ink-2);
+    max-width: 62ch;
+  }
+  .results {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border-top: 1px solid var(--line);
+  }
+  .results li {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 16px;
+    padding-block: 16px;
+    border-bottom: 1px solid var(--line);
+    color: var(--ink-2);
+  }
+  .fig {
+    font-family: var(--font-display);
+    font-size: 1.375rem;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+  .fine {
+    font-size: 0.8125rem;
+    color: var(--muted);
+    margin-top: 16px;
+  }
+  aside {
+    position: sticky;
+    top: 24px;
+  }
+  .aside-title {
+    font-family: var(--font-body);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    padding-top: 16px;
+    border-top: 2px solid var(--ink);
+  }
+  .people {
+    list-style: none;
+    margin: 0 0 32px;
+    padding: 0;
+    display: grid;
+    gap: 12px;
+  }
+  .people a {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    text-decoration: none;
+  }
+  .mono {
+    width: 48px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    background: var(--paper-sunk);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    font-family: var(--font-display);
+    color: var(--ink-2);
+  }
+  .pname {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 1.125rem;
+  }
+  .prole {
+    display: block;
+    font-size: 0.875rem;
+    color: var(--muted);
+  }
+  .box {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 24px;
+  }
+  .box p {
+    color: var(--ink-2);
+    font-size: 0.9375rem;
+  }
+  @media (max-width: 900px) {
+    .layout {
+      grid-template-columns: 1fr;
+    }
+    aside {
+      position: static;
+    }
+    .results li {
+      grid-template-columns: 1fr;
+      gap: 4px;
+    }
+  }
+</style>

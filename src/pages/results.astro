@@ -1,0 +1,185 @@
+---
+import Base from "../layouts/Base.astro";
+import { results, practiceAreas, areaName, sectionNumber } from "../data/site";
+
+const areasWithResults = practiceAreas.filter((a) => results.items.some((r) => r.area === a.slug));
+---
+
+<Base title="Case results" description="Sample case results from Whitcombe & Vale LLP, with the context behind each one.">
+  <header class="page-head">
+    <div class="wrap">
+      <p class="kicker">Case results</p>
+      <h1>Results, and the work behind them</h1>
+      <p class="lede">A selection of verdicts, settlements and rulings across our practice areas.</p>
+    </div>
+  </header>
+
+  <section class="section">
+    <div class="wrap">
+      <p class="notice" role="note"><strong>Sample results.</strong> {results.disclaimer}</p>
+
+      <div class="filters" role="group" aria-label="Filter by practice area">
+        <button type="button" aria-pressed="true" data-filter="all">All</button>
+        {
+          areasWithResults.map((a) => (
+            <button type="button" aria-pressed="false" data-filter={a.slug}>
+              {a.name}
+            </button>
+          ))
+        }
+      </div>
+
+      <table class="table">
+        <caption class="visually-hidden">Sample case results</caption>
+        <thead>
+          <tr>
+            <th scope="col">Outcome</th>
+            <th scope="col">Matter</th>
+            <th scope="col">Practice area</th>
+            <th scope="col" class="year">Year</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            results.items.map((r) => (
+              <tr data-area={r.area}>
+                <td class="fig">
+                  {r.figure}
+                  <span class="kind">{r.kind}</span>
+                </td>
+                <td>{r.text}</td>
+                <td class="area">
+                  <a href={`/practice-areas/${r.area}`}>
+                    <span class="sect">§ {sectionNumber(r.area)}</span> {areaName(r.area)}
+                  </a>
+                </td>
+                <td class="year">{r.year}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+</Base>
+
+<script>
+  const buttons = document.querySelectorAll<HTMLButtonElement>("[data-filter]");
+  const rows = document.querySelectorAll<HTMLTableRowElement>("tbody tr");
+  buttons.forEach((b) =>
+    b.addEventListener("click", () => {
+      const f = b.dataset.filter;
+      buttons.forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+      rows.forEach((r) => (r.hidden = f !== "all" && r.dataset.area !== f));
+    }),
+  );
+</script>
+
+<style>
+  .notice {
+    max-width: 80ch;
+    padding: 16px 20px;
+    background: var(--paper-sunk);
+    border-left: 2px solid var(--accent);
+    color: var(--ink-2);
+    font-size: 0.9375rem;
+    margin-bottom: 40px;
+  }
+  .notice strong {
+    font-weight: 500;
+    color: var(--ink);
+  }
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+  .filters button {
+    font: inherit;
+    font-size: 0.875rem;
+    min-height: 36px;
+    padding: 0 12px;
+    border-radius: var(--radius);
+    border: 1px solid var(--line-strong);
+    background: transparent;
+    color: var(--ink-2);
+    cursor: pointer;
+    transition: background-color 150ms var(--ease), color 150ms var(--ease);
+  }
+  .filters button:hover {
+    color: var(--ink);
+  }
+  .filters button[aria-pressed="true"] {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--on-navy);
+  }
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+    border-top: 2px solid var(--ink);
+  }
+  th {
+    text-align: left;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--muted);
+    padding: 12px 16px 12px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  td {
+    vertical-align: top;
+    padding: 20px 16px 20px 0;
+    border-bottom: 1px solid var(--line);
+    color: var(--ink-2);
+  }
+  .fig {
+    font-family: var(--font-display);
+    font-size: 1.75rem;
+    line-height: 1.15;
+    color: var(--ink);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+    width: 220px;
+  }
+  .kind {
+    display: block;
+    font-family: var(--font-body);
+    font-size: 0.8125rem;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+  .area a {
+    text-decoration: none;
+    font-size: 0.9375rem;
+  }
+  .year {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    padding-right: 0;
+  }
+  @media (max-width: 760px) {
+    thead {
+      display: none;
+    }
+    tr {
+      display: grid;
+      padding-block: 16px;
+      border-bottom: 1px solid var(--line);
+      gap: 4px;
+    }
+    tr[hidden] {
+      display: none;
+    }
+    td {
+      padding: 0;
+      border: 0;
+    }
+    .year {
+      text-align: left;
+      font-size: 0.8125rem;
+      color: var(--muted);
+    }
+  }
+</style>

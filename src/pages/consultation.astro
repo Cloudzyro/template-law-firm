@@ -1,0 +1,123 @@
+---
+import Base from "../layouts/Base.astro";
+import Form from "../components/Form.astro";
+import { site, consultation, practiceAreas } from "../data/site";
+---
+
+<Base title="Request a consultation" description={consultation.text}>
+  <div class="wrap layout">
+    <div class="intro">
+      <p class="kicker">Consultation</p>
+      <h1>{consultation.title}</h1>
+      <p class="lede">{consultation.text}</p>
+      <p class="call">
+        Prefer to call? <a href={`tel:${site.phone.replace(/[^\d+]/g, "")}`}>{site.phone}</a>
+      </p>
+      <h2>{consultation.afterTitle}</h2>
+      <ol>{consultation.after.map((s) => <li>{s}</li>)}</ol>
+    </div>
+
+    <div class="panel">
+      <Form
+        subject={`Consultation request for ${site.legalName}`}
+        button="Send request"
+        success="Thank you. An attorney will review your request and contact you within one business day."
+      >
+        <div class="field-row">
+          <label class="field">
+            <span>Full name</span>
+            <input name="name" autocomplete="name" required />
+          </label>
+          <label class="field">
+            <span>Phone</span>
+            <input name="phone" type="tel" autocomplete="tel" required />
+          </label>
+        </div>
+        <div class="field-row">
+          <label class="field">
+            <span>Email</span>
+            <input name="email" type="email" autocomplete="email" required />
+          </label>
+          <label class="field">
+            <span>Best time to call <small>(optional)</small></span>
+            <select name="best_time">
+              <option>Any time</option>
+              <option>Morning</option>
+              <option>Afternoon</option>
+              <option>After 5pm</option>
+            </select>
+          </label>
+        </div>
+        <label class="field">
+          <span>Practice area</span>
+          <select name="practice_area" id="area" required>
+            <option value="">Choose one</option>
+            {practiceAreas.map((a) => <option value={a.slug}>{a.name}</option>)}
+            <option value="not-sure">Not sure</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Other people or companies involved <small>(for our conflict check)</small></span>
+          <input name="other_parties" />
+        </label>
+        <label class="field">
+          <span>Briefly, what's happening?</span>
+          <textarea name="message" rows="5" required></textarea>
+        </label>
+        <p class="caution">{consultation.caution}</p>
+      </Form>
+    </div>
+  </div>
+</Base>
+
+<script>
+  const area = new URLSearchParams(location.search).get("area");
+  const select = document.getElementById("area") as HTMLSelectElement | null;
+  if (area && select && [...select.options].some((o) => o.value === area)) select.value = area;
+</script>
+
+<style>
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr);
+    gap: clamp(40px, 6vw, 96px);
+    padding-block: clamp(48px, 7vw, 96px);
+    align-items: start;
+  }
+  h1 {
+    font-size: clamp(2.25rem, 4.4vw, 3.5rem);
+  }
+  .call {
+    color: var(--ink-2);
+  }
+  .intro h2 {
+    font-family: var(--font-body);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    margin-top: 40px;
+    padding-top: 16px;
+    border-top: 2px solid var(--ink);
+  }
+  .intro ol {
+    padding-left: 20px;
+    color: var(--ink-2);
+    display: grid;
+    gap: 8px;
+  }
+  .panel {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: clamp(20px, 4vw, 40px);
+  }
+  .caution {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--muted);
+  }
+  @media (max-width: 900px) {
+    .layout {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,100 @@
+---
+import Base from "../../layouts/Base.astro";
+import { attorneys, areaName } from "../../data/site";
+---
+
+<Base title="Attorneys" description="Meet the attorneys of Whitcombe & Vale LLP.">
+  <header class="page-head">
+    <div class="wrap">
+      <p class="kicker">Attorneys</p>
+      <h1>The people who will answer your call</h1>
+      <p class="lede">
+        Every client works with a named attorney and paralegal from the first meeting to the last letter. Here's who
+        they are.
+      </p>
+    </div>
+  </header>
+  <section class="section">
+    <div class="wrap">
+      <ul class="grid">
+        {
+          attorneys.map((p) => (
+            <li>
+              <a href={`/attorneys/${p.slug}`}>
+                <span class="mono" aria-hidden="true">{p.initials}</span>
+                <span class="name">{p.name}</span>
+                <span class="role">{p.role}</span>
+                <span class="summary">{p.summary}</span>
+                <span class="areas">{p.areas.map(areaName).join(", ")}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 48px 32px;
+  }
+  a {
+    display: grid;
+    gap: 4px;
+    text-decoration: none;
+  }
+  .mono {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 4 / 3;
+    background: var(--paper-sunk);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    font-family: var(--font-display);
+    font-size: 3rem;
+    color: var(--ink-2);
+    margin-bottom: 16px;
+    transition: background-color 150ms var(--ease);
+  }
+  a:hover .mono {
+    background: #e4e2da;
+  }
+  .name {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    line-height: 1.2;
+  }
+  a:hover .name {
+    color: var(--accent);
+  }
+  .role {
+    color: var(--ink-2);
+    font-size: 0.9375rem;
+  }
+  .summary {
+    color: var(--ink-2);
+    margin-top: 8px;
+    font-size: 0.9375rem;
+  }
+  .areas {
+    color: var(--muted);
+    font-size: 0.8125rem;
+    margin-top: 4px;
+  }
+  @media (max-width: 900px) {
+    .grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 560px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
